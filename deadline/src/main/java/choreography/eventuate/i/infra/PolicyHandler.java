@@ -1,33 +1,46 @@
 package choreography.eventuate.i.infra;
 
-import javax.naming.NameParser;
-
-import javax.naming.NameParser;
 import javax.transaction.Transactional;
-
-import choreography.eventuate.i.config.kafka.KafkaProcessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
+
+import io.eventuate.tram.events.subscriber.DomainEventDispatcher;
+import io.eventuate.tram.events.subscriber.DomainEventDispatcherFactory;
+import io.eventuate.tram.events.subscriber.DomainEventEnvelope;
+import io.eventuate.tram.events.subscriber.DomainEventHandlersBuilder;
+
 import choreography.eventuate.i.domain.*;
 
 
 @Service
 @Transactional
+@Configuration
 public class PolicyHandler{
+
+
+
+    @Bean
+    public DomainEventDispatcher orderEventDispatcher(DomainEventDispatcherFactory domainEventDispatcherFactory) {
+      return domainEventDispatcherFactory.make("OrderEvents", DomainEventHandlersBuilder
+      .forAggregateType(".domain.Order")
+      .onEvent(OrderCreated.class, PolicyHandler::wheneverOrderCreated_Schedule)
+      .onEvent(OrderPlaced.class, PolicyHandler::wheneverOrderPlaced_RemoveDeadline)
+      .build());
+    }
+
+
+
     @Autowired DeadlineRepository deadlineRepository;
     
-    @StreamListener(KafkaProcessor.INPUT)
-    public void whatever(@Payload String eventString){}
 
-    @StreamListener(value=KafkaProcessor.INPUT, condition="headers['type']=='OrderCreated'")
-    public void wheneverOrderCreated_Schedule(@Payload OrderCreated orderCreated){
 
-        OrderCreated event = orderCreated;
-        System.out.println("\n\n##### listener Schedule : " + orderCreated + "\n\n");
+
+    public static void wheneverOrderCreated_Schedule(DomainEventEnvelope<OrderCreated> orderCreatedEnvelope){
+
+        OrderCreated event = orderCreatedEnvelope.getEvent();
+        System.out.println("\n\n##### listener Schedule : " + event + "\n\n");
 
 
         
@@ -40,11 +53,13 @@ public class PolicyHandler{
 
     }
 
-    @StreamListener(value=KafkaProcessor.INPUT, condition="headers['type']=='OrderPlaced'")
-    public void wheneverOrderPlaced_RemoveDeadline(@Payload OrderPlaced orderPlaced){
 
-        OrderPlaced event = orderPlaced;
-        System.out.println("\n\n##### listener RemoveDeadline : " + orderPlaced + "\n\n");
+
+
+    public static void wheneverOrderPlaced_RemoveDeadline(DomainEventEnvelope<OrderPlaced> orderPlacedEnvelope){
+
+        OrderPlaced event = orderPlacedEnvelope.getEvent();
+        System.out.println("\n\n##### listener RemoveDeadline : " + event + "\n\n");
 
 
         

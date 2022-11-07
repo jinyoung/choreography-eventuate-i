@@ -1,11 +1,14 @@
 package choreography.eventuate.i.domain;
 
-import choreography.eventuate.i.domain.DeadlineReached;
-import choreography.eventuate.i.DeadlineApplication;
+import static choreography.eventuate.i.DeadlineApplication.applicationContext;
 import javax.persistence.*;
 import java.util.List;
 import lombok.Data;
 import java.util.Date;
+import java.util.Collections;
+
+import io.eventuate.tram.events.publisher.DomainEventPublisher;
+
 
 @Entity
 @Table(name="Deadline_table")
@@ -46,13 +49,20 @@ public class Deadline  {
 
 
         DeadlineReached deadlineReached = new DeadlineReached(this);
-        deadlineReached.publishAfterCommit();
+
+        publisher().publish(getClass(), getId(), Collections.singletonList(deadlineReached));
 
     }
 
     public static DeadlineRepository repository(){
-        DeadlineRepository deadlineRepository = DeadlineApplication.applicationContext.getBean(DeadlineRepository.class);
+        DeadlineRepository deadlineRepository = applicationContext.getBean(DeadlineRepository.class);
         return deadlineRepository;
+    }
+
+    static DomainEventPublisher publisher(){
+        return applicationContext.getBean(
+            DomainEventPublisher.class
+        );
     }
 
 

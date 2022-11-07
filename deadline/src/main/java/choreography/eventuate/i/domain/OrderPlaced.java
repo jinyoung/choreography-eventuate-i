@@ -1,12 +1,14 @@
 package choreography.eventuate.i.domain;
 
 import choreography.eventuate.i.domain.*;
-import choreography.eventuate.i.infra.AbstractEvent;
 import lombok.*;
 import java.util.*;
+import io.eventuate.tram.events.common.DomainEvent;
+
+
 @Data
 @ToString
-public class OrderPlaced extends AbstractEvent {
+public class OrderPlaced implements DomainEvent {
 
     private Long id;
     private String currencyId;
