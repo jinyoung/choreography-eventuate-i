@@ -19,57 +19,21 @@ public class Order  {
     
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    
-    
-    
-    
-    
     private Long id;
-    
-    
-    
-    
     
     private String currencyId;
     
-    
-    
-    
-    
     private Double amount;
     
-    
-    
-    
-    
     private String status;
-    
-    
-    
-    
     
     private String holderId;
 
     @PostPersist
     public void onPostPersist(){
-
-
         OrderCreated orderCreated = new OrderCreated(this);
 
         publisher().publish(getClass(), getId(), Collections.singletonList(orderCreated));
-
-
-
-        OrderPlaced orderPlaced = new OrderPlaced(this);
-
-        publisher().publish(getClass(), getId(), Collections.singletonList(orderPlaced));
-
-
-
-        OrderRejected orderRejected = new OrderRejected(this);
-
-        publisher().publish(getClass(), getId(), Collections.singletonList(orderRejected));
-
     }
 
     public static OrderRepository repository(){

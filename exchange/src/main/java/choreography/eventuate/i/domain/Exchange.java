@@ -56,19 +56,19 @@ public class Exchange  {
 
         ExchangeSucceeded exchangeSucceeded = new ExchangeSucceeded(this);
 
-        publisher().publish(getClass(), getId(), Collections.singletonList(exchangeSucceeded));
+        publisher().publish(getClass(), getOrderId(), Collections.singletonList(exchangeSucceeded));
 
 
 
         ExchangeFailed exchangeFailed = new ExchangeFailed(this);
 
-        publisher().publish(getClass(), getId(), Collections.singletonList(exchangeFailed));
+        publisher().publish(getClass(), getOrderId(), Collections.singletonList(exchangeFailed));
 
 
 
         ExchangeCompensated exchangeCompensated = new ExchangeCompensated(this);
 
-        publisher().publish(getClass(), getId(), Collections.singletonList(exchangeCompensated));
+        publisher().publish(getClass(), getOrderId(), Collections.singletonList(exchangeCompensated));
 
     }
 
@@ -91,17 +91,26 @@ public class Exchange  {
 
     public static void exchange(OrderCreated orderCreated){
 
-        /** Example 1:  new item 
-        Exchange exchange = new Exchange();
-        repository().save(exchange);
+        /** Example 1:  new item        */ 
 
-        ExchangeSucceeded exchangeSucceeded = new ExchangeSucceeded(exchange);
-        publisher().publish(exchangeSucceeded.getClass(), getId(), Collections.singletonList(exchangeSucceeded));
+        try{
+            Exchange exchange = new Exchange();
+            // exchange.setAmount(orderCreated.getAmount());
+            // exchange.setCurrencyId(orderCreated.getCurrencyId());
 
-        ExchangeFailed exchangeFailed = new ExchangeFailed(exchange);
-        publisher().publish(exchangeFailed.getClass(), getId(), Collections.singletonList(exchangeFailed));
+            repository().save(exchange);
 
-        */
+            ExchangeSucceeded exchangeSucceeded = new ExchangeSucceeded(exchange);
+            publisher().publish(exchangeSucceeded.getClass(), exchange.getOrderId(), Collections.singletonList(exchangeSucceeded));
+
+        }catch(Exception e){
+
+
+        }
+
+
+
+
 
         /** Example 2:  finding and process
         

@@ -24,7 +24,7 @@ public class PolicyHandler{
     @Bean
     public DomainEventDispatcher orderEventDispatcher(DomainEventDispatcherFactory domainEventDispatcherFactory) {
       return domainEventDispatcherFactory.make("OrderEvents", DomainEventHandlersBuilder
-      .forAggregateType(".domain.Order")
+      .forAggregateType("choreography.eventuate.i.domain.Order")
       .onEvent(OrderCreated.class, PolicyHandler::wheneverOrderCreated_Exchange)
       .onEvent(OrderRejected.class, PolicyHandler::wheneverOrderRejected_Compensate)
       .build());

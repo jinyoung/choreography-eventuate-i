@@ -24,7 +24,7 @@ public class PolicyHandler{
     @Bean
     public DomainEventDispatcher exchangeEventDispatcher(DomainEventDispatcherFactory domainEventDispatcherFactory) {
       return domainEventDispatcherFactory.make("ExchangeEvents", DomainEventHandlersBuilder
-      .forAggregateType(".domain.Exchange")
+      .forAggregateType("choreography.eventuate.i.domain.Exchange")
       .onEvent(ExchangeFailed.class, PolicyHandler::wheneverExchangeFailed_Reject)
       .build());
     }
@@ -33,7 +33,7 @@ public class PolicyHandler{
     @Bean
     public DomainEventDispatcher pointEventDispatcher(DomainEventDispatcherFactory domainEventDispatcherFactory) {
       return domainEventDispatcherFactory.make("PointEvents", DomainEventHandlersBuilder
-      .forAggregateType(".domain.Point")
+      .forAggregateType("choreography.eventuate.i.domain.Point")
       .onEvent(PointUsed.class, PolicyHandler::wheneverPointUsed_Approve)
       .build());
     }
